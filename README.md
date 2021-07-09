@@ -1,1 +1,76 @@
-# muniyama-api
+# Muniyama - The Sovryn API
+Muniyama is a REST API that is built for easy and fast retrieval of data in RSK mainnet pertaining to events occuring in [Sovryn's](https://www.sovryn.app/) smart contracts. 
+
+## What Does Muniyama do?
+Muniyama uses the [Muniyama-Syncer](https://github.com/DeveloperInProgress/Muniyama-Syncer) which in turn uses [the Covalent API](https://www.covalenthq.com/docs/api/#tag--Class-A) to listen to Sovryn events occuring in RSK mainnet using the event's topics. When a new block is found to be added, the syncer queries for all the events that are in defined in Sovryn contracts and if any of these events are found to be emitted, their data is immediately added to the Muniyama Database which is a postgres database hosted in AWS Relational Database Service. These event data can be queried through the end-point http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/ . The instructions on using this API will be discussed in the later sections.
+
+## Muniyama Syncer
+The Muniyama Syncer can be found in this repository: https://github.com/DeveloperInProgress/Muniyama-Syncer
+It is the component in muniyama that enables continous synchronization of the chain data. It is continuously listens for new blocks in RSK Mainnet and uses the covalent api to get event data of events defined in Sovryn contracts using their topic values. If any event data is retrieved from these blocks, the data is added to the Muniyama database. 
+Muniyama Syncer is hosted in an AWS EC2 instance.
+
+## Muniyama Database 
+Muniyama Database is a postgres database hosted in Amazon RDS. 
+A seperate table for each event is present and a seperate attribute for each data in the events is present in the corresponding table. 
+
+Each of the table will contain two identifying attributes alongside event data attributes:
+
+1.) block_num : The block number of the block from which the event was retrieved
+
+2.) tx_hash : The transaction hash of the transaction in which the event occured
+
+The names of the tables present in this Database are:
+
+| Table Name | Pertaining Event |
+| ---------- | ---------------: |
+|borrow      | [Borrow](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanOpeningsEvents.sol#L17)|
+|trade       | [Trade](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanOpeningsEvents.sol#L32)|
+|delegatormanagerset|[DelegatorManagerSet](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanOpeningsEvents.sol#L48)|
+|depositcollateral|[DepositCollateral](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanMaintenanceEvents.sol#L11)|
+|closewithdeposit|[CloseWithDeposit](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanClosingsEvents.sol#L17)|
+|closewithswap|[CloseWithSwap](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanClosingsEvents.sol#L31)|
+|liquidate|[Liquidate](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanClosingsEvents.sol#L45)|
+|swapexcess|[SwapExcess](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanClosingsEvents.sol#L58)|
+|loanparamssetup|[LoanParamsSetup](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanSettingsEvents.sol#L16)|
+|loanparamsidsetup|[LoanParamsIdSetup](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanSettingsEvents.sol#L25)|
+|loanparamsdisabled|[LoanParamsDisabled](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanSettingsEvents.sol#L27)|
+|loanparamsiddisabled|[LoanParamsIdDisabled](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/LoanSettingsEvents.sol#L36)|
+|paylendingfee|[PayLendingFee](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/FeesEvents.sol#L16)|
+|paytradingfee|[PayTradingFee](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/FeesEvents.sol#L18)|
+|payborrowingfee|[PayBorrowingFee](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/FeesEvents.sol#L20)|
+|earnreward|[EarnReward](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/FeesEvents.sol#L22)|
+|setpricefeedcontract|[SetPriceFeedContract](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L16)|
+|setswapsimplcontract|[SetSwapsImplContract](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L18)|
+|setloanpool|[SetLoanPool](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L20)|
+|setsupportedtokens|[SetSupportedTokens](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L22)|
+|setlendingfeepercent|[SetLendingFeePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L24)|
+|settradingfeepercent|[SetTradingFeePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L26)|
+|setborrowingfeepercent|[SetBorrowingFeePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L28)|
+|setaffiliatefeepercent|[SetAffiliateFeePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L30)|
+|setaffiliatetradingtokenfeepercent(coming soon)|[SetAffiliateTradingTokenFeePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L32)|
+|setliquidationincentivepercent|[SetLiquidationIncentivePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L34)|
+|setmaxswapsize|[SetMaxSwapSize](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L36)|
+|setfeescontroller|[SetFeesController](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L38)|
+|setwrbtctoken|[SetWrbtcToken](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L40)|
+|setsovrynswapcontractregistryaddress|[SetSovrynSwapContractRegistryAddress](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L42)|
+|setprotocoltokenaddress|[SetProtocolTokenAddress](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L48)|
+|withdrawfees|[WithdrawFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L50)|
+|withdrawlendingfees|[WithdrawLendingFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L59)|
+|withdrawtradingfees|[WithdrawTradingFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L61)|
+|withdrawborrowingfees|[WithdrawBorrowingFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L63)|
+|setrolloverbasereward|[SetRolloverBaseReward](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L65)|
+|setrebatepercent|[SetRebatePercent](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L67)|
+|setprotocoladdress(coming soon)|[SetProtocolAddress](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L69)|
+|setminreferralstopayoutaffiliates(coming soon)|[SetMinReferralsToPayoutAffiliates](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L71)|
+|setsovtokenaddress(coming soon)|[SetSovTokeAddress](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L73)|
+|setlockedsovaddress(coming soon)|[SetLockedSovAddress](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/ProtocolSettingsEvents.sol#L75)|
+|loanswap|[LoanSwap](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/SwapsEvents.sol#L16)|
+|externalswap|[ExternalSwap](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/SwapsEvents.sol#L25)|
+|setaffiliatesreferrer(coming soon)|[SetAffiliatesReferrrer](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L9)|
+|setaffiliatesreferrerfail(coming soon)|[SetAffiliatesReferrerFail](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L11)|
+|setusernotfirsttradeflag(coming soon)|[SetUserNotFirstTradeFlag](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L13)|
+|paytradingfeetoaffililate(coming soon)|[PayTradingFeeToAffiliate](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L15)|
+|paytradingfeetoaffiliatefail(coming soon)|[PayTradingFeeToAffilateFail](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L26)|
+|withdrawaffiliatesreferrertokenfee(coming soon)|[WithdrawAffiliatesReferrerTokenFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L36)|
+
+## Querying
