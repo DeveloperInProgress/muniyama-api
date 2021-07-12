@@ -80,13 +80,13 @@ Base url of the API is http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbean
 
 1.) `events/{eventName}` :
 
-Path Parameters:
+#### Path Parameters:
 
 1.) eventName
 
 eventName is the name of the event whose past data has to be retrieved. eventName can be any of the values present in `Table Name` column of the table given under  `Muniyama Database` section. The table names are the same as the event names, so there is no need for any seperate referencing of table names, you can use the name of the event whose data is to be queried
 
-Query-String Parameters:
+#### Query-String Parameters:
 
 1.) fromBlock:
 
@@ -98,6 +98,44 @@ It is the block number of the block upto which data has to be queried. For, exam
 
 3.)  table attributes:
 
-A table in the Muniyama Database stores data pertaining to a single event type. Each of the table will the following attributes:
+A table in the Muniyama Database stores data pertaining to a single event type. Each of the table will have the following attributes:
 
-`block_num` : The block number of the block from which the event was obtained
+`block_num` : The block number of the block from which the event data were obtained
+`tx_hash` : The transaction hash of the transaction from which the event data were obtained
+event parameters : Events may have parameters associated with them. Each of those parameters is an attribute in the table.
+
+For example, consider the Borrow event: 
+`
+event Borrow(
+		address indexed user,
+		address indexed lender,
+		bytes32 indexed loanId,
+		address loanToken,
+		address collateralToken,
+		uint256 newPrincipal,
+		uint256 newCollateral,
+		uint256 interestRate,
+		uint256 interestDuration,
+		uint256 collateralToLoanRate,
+		uint256 currentMargin
+	);
+`
+
+data pertaining to this event is indexed in the `borrow` table. The attributes of this table will be:
+
+`block_num`,`tx_hash`,`user1`,`lender`,`loanId`,`loanToken`,`collateralToken`,`newPrincipal`,`newCollateral`,`interestRate`,`interestDuration`,`collateralToLoanRate`,`currentMargin`
+
+Note that the parameter `user` corresponds to the attribute `user1` in the table, that is because postgres does not allow `user` for an attribute name.
+
+### An Example Query 
+
+The following url queries borrow event that occured between blocks 3400000 and 3400100 where `lender` is '0x849C47f9C259E9D62F289BF1b2729039698D8387' or '0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A':
+
+`http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/borrow?fromBlock=3400000&toBlock=34000100&lender=['0x849C47f9C259E9D62F289BF1b2729039698D8387','0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A']`
+
+## Query Output
+
+The response data for every request is a json containing two fields:
+
+1.) `data` : It contains the data queried from the database. It is a list of json objects, where each json object corresponds to a row in the table queried. The field name of the json will be same as the attribute names of the table, and the value of the field is the data present in corresponding row under the corresponding attribute. The value of this field defaults to null
+2.) `error` : If any exceptions occur while querying the database with the parameters, it will be stored in this field. postgres exceptions are always in JSON format. The value of thiws field defaults to null.
