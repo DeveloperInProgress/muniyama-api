@@ -72,5 +72,28 @@ The names of the tables present in this Database are:
 |paytradingfeetoaffililate(coming soon)|[PayTradingFeeToAffiliate](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L15)|
 |paytradingfeetoaffiliatefail(coming soon)|[PayTradingFeeToAffilateFail](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L26)|
 |withdrawaffiliatesreferrertokenfee(coming soon)|[WithdrawAffiliatesReferrerTokenFees](https://github.com/DistributedCollective/Sovryn-smart-contracts/blob/298bbc98552356eed6a340b4004970b03bee7a9e/contracts/events/AffiliatesEvents.sol#L36)|
-
 ## Querying
+
+Base url of the API is http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/
+
+### Paths
+
+1.) `events/{eventName}` :
+
+Path Parameters:
+
+1.) eventName
+Here eventName is the name of the event whose past data has to be retrieved. eventName can be any of the values present in `Table Name` column of the table given under  `Muniyama Database` section. The table names are the same as the event names, so there is no need for any seperate referencing of table names, you can use the name of the event whose data is to be queried
+
+Query-String Parameters:
+
+1.) fromBlock:
+
+It is the block number starting from which data has to be queried. For example, if `fromBlock` paramater is given as 10, then the querying will be done from block number 10 upto the latest block indexed. 
+
+2.) toBlock:
+
+It is the block number of the block upto which data has to be queried. For, example if `toBlock` parameter is given as 10, then the querying will be done from the genesis block upto block number 10
+
+3.)  table attributes:
+
