@@ -83,7 +83,8 @@ Base url of the API is http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbean
 Path Parameters:
 
 1.) eventName
-Here eventName is the name of the event whose past data has to be retrieved. eventName can be any of the values present in `Table Name` column of the table given under  `Muniyama Database` section. The table names are the same as the event names, so there is no need for any seperate referencing of table names, you can use the name of the event whose data is to be queried
+
+eventName is the name of the event whose past data has to be retrieved. eventName can be any of the values present in `Table Name` column of the table given under  `Muniyama Database` section. The table names are the same as the event names, so there is no need for any seperate referencing of table names, you can use the name of the event whose data is to be queried
 
 Query-String Parameters:
 
@@ -97,3 +98,6 @@ It is the block number of the block upto which data has to be queried. For, exam
 
 3.)  table attributes:
 
+A table in the Muniyama Database stores data pertaining to a single event type. Each of the table will the following attributes:
+
+`block_num` : The block number of the block from which the event was obtained
