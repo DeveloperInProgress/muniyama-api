@@ -129,9 +129,9 @@ Note that the parameter `user` corresponds to the attribute `user1` in the table
 
 ### An Example Query 
 
-The following url queries borrow event that occured between blocks 3400000 and 3400100 where `lender` is '0x849C47f9C259E9D62F289BF1b2729039698D8387' or '0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A':
+The following url queries borrow event that occured between blocks 3400000 and 3500000 where `lender` is '0x849C47f9C259E9D62F289BF1b2729039698D8387' or '0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A':
 
-`http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/borrow?fromBlock=3400000&toBlock=34000100&lender=['0x849C47f9C259E9D62F289BF1b2729039698D8387','0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A']`
+`http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/borrow?fromBlock=3400000&toBlock=3500000&lender=['0x849C47f9C259E9D62F289BF1b2729039698D8387','0xa9DcDC63eaBb8a2b6f39D7fF9429d88340044a7A']`
 
 ## Query Output
 
