@@ -2,7 +2,7 @@
 Muniyama is a REST API that is built for easy and fast retrieval of data in RSK mainnet pertaining to events occuring in [Sovryn](https://www.sovryn.app/) network. 
 
 ## What Does Muniyama do?
-Muniyama uses the [Muniyama-Syncer](https://github.com/DeveloperInProgress/Muniyama-Syncer) which in turn uses [the Covalent API](https://www.covalenthq.com/docs/api/#tag--Class-A) to listen to Sovryn events occuring in RSK mainnet using the event's topics. When a new block is found to be added, the syncer queries for all the events that are in defined in Sovryn contracts and if any of these events are found to be emitted, their data is immediately added to the Muniyama Database which is a postgres database hosted in AWS Relational Database Service. These event data can be queried through the end-point http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/ . The instructions on using this API will be discussed in the later sections.
+Muniyama uses the [Muniyama-Syncer](https://github.com/DeveloperInProgress/Muniyama-Syncer) which in turn uses [the Covalent API](https://www.covalenthq.com/docs/api/#tag--Class-A) to listen to Sovryn events occuring in RSK mainnet using the event's topics. When a new block is found to be added, the syncer queries for all the events that are  defined in Sovryn contracts and if any of these events are found to occur, their data is immediately added to the Muniyama Database which is a postgres database hosted in AWS Relational Database Service. These event data can be queried through the end-point http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/ . The instructions on using this API will be discussed in the later sections.
 
 ## Muniyama Syncer
 The Muniyama Syncer can be found in this repository: https://github.com/DeveloperInProgress/Muniyama-Syncer
@@ -19,7 +19,7 @@ Each of the table will contain two identifying attributes alongside event data a
 
 2.) tx_hash : The transaction hash of the transaction in which the event occured
 
-The names of the tables present in this Database are:
+The names of the tables present in this Database are: 
 
 | Table Name | Pertaining Event |
 | ---------- | ---------------: |
@@ -152,3 +152,6 @@ For example, the response for the request given under `An Example Query` section
 
 2.) Some of the event data are tagged `(Coming Soon)` in the table given under `Muniyama Database` Section. These event data are not indexed at present because they were not mentioned in the Sovryn contracts at the time of deployment of this API. But they will be indexed soon.
 
+3.) Data can be processed further into data that might be useful for the third parties. These processed data can be made available through separate endpoints in REST API.
+
+4.) A proper domain that is relevant and can be easily remembered must be bought for this API.
