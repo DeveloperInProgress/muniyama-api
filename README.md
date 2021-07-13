@@ -1,5 +1,5 @@
 # Muniyama - The Sovryn API
-Muniyama is a REST API that is built for easy and fast retrieval of data in RSK mainnet pertaining to events occuring in [Sovryn's](https://www.sovryn.app/) smart contracts. 
+Muniyama is a REST API that is built for easy and fast retrieval of data in RSK mainnet pertaining to events occuring in [Sovryn](https://www.sovryn.app/) network. 
 
 ## What Does Muniyama do?
 Muniyama uses the [Muniyama-Syncer](https://github.com/DeveloperInProgress/Muniyama-Syncer) which in turn uses [the Covalent API](https://www.covalenthq.com/docs/api/#tag--Class-A) to listen to Sovryn events occuring in RSK mainnet using the event's topics. When a new block is found to be added, the syncer queries for all the events that are in defined in Sovryn contracts and if any of these events are found to be emitted, their data is immediately added to the Muniyama Database which is a postgres database hosted in AWS Relational Database Service. These event data can be queried through the end-point http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/events/ . The instructions on using this API will be discussed in the later sections.
