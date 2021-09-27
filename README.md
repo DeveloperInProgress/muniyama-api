@@ -3,9 +3,6 @@ Muniyama is a REST API that is built for easy and fast retrieval of data in RSK 
 
 Base URL : http://muniyamaapi-env.eba-dwmnzgre.us-east-2.elasticbeanstalk.com/
 
-Video Demo : https://youtu.be/m4WNpL6Op0s
-
-Presentation : https://github.com/DeveloperInProgress/muniyama-api/blob/main/MUNIYAMA%20%E2%80%93%20SOVRYN%20CHAIN%20DATA%20API.pptx
 
 
 ## What Does Muniyama do?
